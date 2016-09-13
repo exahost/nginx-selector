@@ -34,7 +34,7 @@
                                     </label>
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
-								<button type="submit" class="btn btn-lg btn-success btn-block">Войти</button>
+								<button type="submit" class="btn btn-outline btn-info btn-block">Войти</button>
                             </fieldset>
                         </form>
                     </div>

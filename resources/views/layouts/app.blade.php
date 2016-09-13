@@ -54,5 +54,46 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="/dist/js/sb-admin-2.js"></script>
+	
+	<!-- DataTables JavaScript -->
+    <script src="/vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="/vendor/datatables-responsive/dataTables.responsive.js"></script>
+	
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#location-table').DataTable({
+            responsive: true,
+			searching: false,
+            language: {
+				decimal:        "",
+				emptyTable:     "Нет данных для таблицы",
+				info:           "_START_-_END_ (всего: _TOTAL_ элементов)",
+				infoEmpty:      "0 элементов",
+				infoFiltered:   "(filtered from _MAX_ total entries)",
+				infoPostFix:    "",
+				thousands:      ",",
+				lengthMenu:     "Показывать по _MENU_ элементов",
+				loadingRecords: "Загрузка...",
+				processing:     "Выполнение...",
+				zeroRecords:    "Не найдено данных",
+				paginate: {
+					first:      "<<",
+					previous:   "<",
+					next:       ">",
+					last:       ">>"
+				}
+			}
+        });
+		$('#location-table tbody')
+        .on( 'mouseenter', 'td', function () {
+            var colIdx = table.cell(this).index().column;
+ 
+            $( table.cells().nodes() ).removeClass( 'highlight' );
+            $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
+        } );
+    });
+    </script>
 </body>
 </html>

@@ -22,10 +22,11 @@ Route::get('logout', ['as' => 'auth.logout', 'uses' => 'Auth\LoginController@log
 Route::post('logout', ['as' => 'auth.logout', 'uses' => 'Auth\LoginController@logout']);
 #Роуты для регистрации
 // По какой-то причине редиректит на /home зарегистрированных пользователей, надо делать свой контроллер
-Route::group(['middleware' => 'auth'], function () {
+/*Route::group(['middleware' => 'auth'], function () {
 	Route::get('register', ['as' => 'auth.register', 'uses' => 'Auth\RegisterController@showRegistrationForm']);
 	Route::post('register', ['as' => 'auth.register', 'uses' => 'Auth\RegisterController@register']);
 });
+*/
 
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('/', 'Dashboard@index');
