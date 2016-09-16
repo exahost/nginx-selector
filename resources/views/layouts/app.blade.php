@@ -94,6 +94,12 @@
             $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
         } );
     });
+
+	// tooltip demo
+    $('.tooltip-button').tooltip({
+        selector: "[data-toggle=tooltip]",
+        container: "body"
+    })
     </script>
 </body>
 </html>
