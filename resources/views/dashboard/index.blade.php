@@ -6,6 +6,12 @@
         <!-- Page Content -->
         <div id="page-wrapper">
             <div class="container-fluid">
+			@if(Session::has('info_message'))
+				<div class="alert alert-info alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{!!Session::get('info_message')!!}
+				</div>
+			@endif
 				<div class="row">
 					<div class="col-md-6">
 						<h3 class="page-header">Список доменных имен</br>
@@ -18,21 +24,27 @@
 								</tr>
 							</thead>
 							<tbody>
+							@foreach($ServerLists as $server)
 								<tr class="odd gradeX">
-									<td><div class="col-md-6 vcenter"><h4>bases.konstanta.ru</h4></div>
+									<td><div class="col-md-6 vcenter"><h4>{{$server->name}}</h4></div>
 									<div class="col-md-6 text-right vcenter tooltip-button">
-										<button type="button" class="btn btn-danger btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Выключить"><i class="glyphicon glyphicon-off"></i>
-										<button type="button" class="btn btn-warning btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать"><i class="glyphicon glyphicon-edit"></i>
-										<button type="button" class="btn btn-danger btn-circle" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить"><i class="glyphicon glyphicon-remove"></i>
+										@if ($server->is_enable)
+												<button onclick="location.href='/server_list/disable/{{$server->id}}'" type="button" class="btn btn-danger btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Выключить"><i class="glyphicon glyphicon-off"></i>
+										@else
+												<button onclick="location.href='/server_list/enable/{{$server->id}}'" type="button" class="btn btn-success btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Включить"><i class="glyphicon glyphicon-off"></i>
+										@endif
+											<button onclick="location.href='/server_list/edit/{{$server->id}}'" type="button" class="btn btn-warning btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать"><i class="glyphicon glyphicon-edit"></i>
+											<button onclick="location.href='/server_list/remove/{{$server->id}}'" type="button" class="btn btn-danger btn-circle" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить"><i class="glyphicon glyphicon-remove"></i>
 									</div>
 									</td>
 								</tr>
+							@endforeach
 							</tbody>
 						</table>
-						<a class="btn btn-success btn-outline btn-block" target="_blank" href="https://datatables.net/">Добавить сервер</a>
+						<a class="btn btn-success btn-outline btn-block" href="/server_list/add">Добавить сервер</a>
 					</div>
 					<div class="col-md-6">
-						<h3 class="page-header">Список серверов назначения</br>
+						<h3 class="page-header">Список upstream</br>
 							<small>Указываются сервера, на которые будут приходить HTTP-запросы</small>
 						</h3>
 						<table width="100%" class="table table-striped table-bordered table-hover" id="server-list-table">
@@ -62,7 +74,7 @@
 								</tr>
 							</tbody>
 						</table>
-						<a class="btn btn-success btn-outline btn-block" target="_blank" href="https://datatables.net/">Добавить сервер</a>
+						<a class="btn btn-success btn-outline btn-block" href="/upstream_list/add">Добавить сервер</a>
 					</div>
 				</div>			
                 <div class="row">
@@ -104,7 +116,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-							<a class="btn btn-success btn-outline btn-block" target="_blank" href="https://datatables.net/">Добавить сервер</a>
+							<a class="btn btn-success btn-outline btn-block" href="/location_list/add">Добавить сервер</a>
                 <!-- /.col-lg-12 -->
             </div>
             </div>
@@ -113,7 +125,7 @@
 					<h3 class="page-header">Применение значений</br>
 						<small>Для генерации конфигурационного файла и применения нажмите кнопку</small>
 					</h3>
-					<a class="btn btn-warning btn-outline btn-block" target="_blank" href="https://datatables.net/">Применить</a>
+					<a class="btn btn-warning btn-outline btn-block" href="/">Применить</a>
 					<div class="col-lg-12">&nbsp;</div>
 				</div>
 			</div>

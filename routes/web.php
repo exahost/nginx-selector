@@ -22,13 +22,27 @@ Route::get('logout', ['as' => 'auth.logout', 'uses' => 'Auth\LoginController@log
 Route::post('logout', ['as' => 'auth.logout', 'uses' => 'Auth\LoginController@logout']);
 #Роуты для регистрации
 // По какой-то причине редиректит на /home зарегистрированных пользователей, надо делать свой контроллер
-/*Route::group(['middleware' => 'auth'], function () {
+///*Route::group(['middleware' => 'auth'], function () {
 	Route::get('register', ['as' => 'auth.register', 'uses' => 'Auth\RegisterController@showRegistrationForm']);
 	Route::post('register', ['as' => 'auth.register', 'uses' => 'Auth\RegisterController@register']);
-});
-*/
+//});
+//*/
 
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('/', 'Dashboard@index');
-	Route::get('/server-list', 'Dashboard@server_list');
+	Route::group(['prefix' => 'server_list'], function (){
+		Route::get('add', 'Dashboard@ServerListAddView');
+		Route::post('add', 'Dashboard@ServerListAdd');
+		Route::get('edit/{id}', 'Dashboard@ServerListEditView')
+			->where('id', '[0-9]+');
+		Route::post('edit/{id}', 'Dashboard@ServerListEdit')
+			->where('id', '[0-9]+');
+		Route::get('enable/{id}', 'Dashboard@ServerListEnable')
+			->where('id', '[0-9]+');
+		Route::get('disable/{id}', 'Dashboard@ServerListDisable')
+			->where('id', '[0-9]+');
+		Route::get('remove/{id}', 'Dashboard@ServerListRemove')
+			->where('id', '[0-9]+');
+	});
+//	Route::get('/server-list', 'Dashboard@server_list');
 });

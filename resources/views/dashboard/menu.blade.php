@@ -45,9 +45,9 @@
                         <li>
                             <a href="{{ url('/') }}"><i class="fa fa-dashboard fa-fw"></i> Панель управления</a>
                         </li>
-                        <li>
+                        {{--<li>
                             <a href="{{ url('/server-list') }}"><i class="fa fa-list fa-fw"></i> Список серверов</a>
-                        </li>
+                        </li>--}}
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
