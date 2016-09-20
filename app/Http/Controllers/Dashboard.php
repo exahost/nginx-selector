@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ServerList;
+use App\Models\UpstreamList;
+use App\Models\LocationList;
 use App\Http\Requests;
 use Validator;
 use Redirect;
@@ -20,11 +22,18 @@ class Dashboard extends Controller
 	}
     public function index()	{
 		$ServerLists=ServerList::all();
+		$UpstreamLists=UpstreamList::all();
 		//var_dump($ServerList);
-		return view('dashboard.index', ['ServerLists'=>$ServerLists]);
+		return view('dashboard.index', ['ServerLists'=>$ServerLists, 'UpstreamLists'=>$UpstreamLists]);
 	}
     public function ServerListAddView()	{
 		return view('dashboard.ServerLists.form');
+	}
+    public function UpstreamListAddView()	{
+		return view('dashboard.UpstreamLists.form');
+	}
+    public function LocationListAddView()	{
+		return view('dashboard.LocationLists.form');
 	}
     public function ServerListAdd(Request $request)	{
 		//Валидация введенных данных
@@ -37,31 +46,79 @@ class Dashboard extends Controller
 			'unique' => 'Такое имя сервера уже используется',
 		]);
 		
-		//var_dump($request->ipv6_enable);exit();
 		//Пишем в БД
-		if ($request->is_enabled == 'on') {
-			$is_enabled=true;
-		}
-		else {
-			$is_enabled=false;
-		}
-		if ($request->ipv6_enable == 'on') {
-			$ipv6_enable=true;
-		}
-		else {
-			$ipv6_enable=false;
-		}
 		$server = new ServerList;
 			$server->name=$request->name;
 			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
 			$server->ipv6_enable=$this->_convert_checkbox($request->ipv6_enable);
 			$server->save();
 		return Redirect::to('/')->with('info_message', 'Сервер добавлен');
-//		return view('dashboard.ServerLists.form');
 	}
+    public function UpstreamListAdd(Request $request)	{
+		//Валидация введенных данных
+		$this->validate($request, [
+			'name' => 'required|max:255|min:3|unique:upstream_lists', 
+			'ip1' => array('required', 'regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+			'ip2' => array('regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+			'ip3' => array('regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+			'ip4' => array('regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+		],[
+			'regex' => 'Неправильный формат IP',
+			'required' => 'Ввод обязателен',
+			'max' => 'Максимальное количество символов алиаса сервера 255',
+			'min' => 'Очень маленький алиаса сервера',
+			'unique' => 'Такой алиас уже используется',
+		]);
+		
+		//Пишем в БД
+		$server = new UpstreamList;
+			$server->name=$request->name;
+			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
+			$server->ip1=$request->ip1;
+			$server->is_backup_ip1=$this->_convert_checkbox($request->is_backup_ip1);
+			$server->ip2=$request->ip2;
+			$server->is_backup_ip2=$this->_convert_checkbox($request->is_backup_ip2);
+			$server->ip3=$request->ip3;
+			$server->is_backup_ip3=$this->_convert_checkbox($request->is_backup_ip3);
+			$server->ip4=$request->ip4;
+			$server->is_backup_ip4=$this->_convert_checkbox($request->is_backup_ip4);
+			$server->save();
+		return Redirect::to('/')->with('info_message', 'Upstream добавлен');
+	}
+    public function LocationListAdd(Request $request)	{
+/*		//Валидация введенных данных
+		$this->validate($request, [
+			'name' => 'required|max:255|min:3|unique:server_lists', 
+		],[
+			'required' => 'Ввод имени сервера обязателен',
+			'max' => 'Максимальное количество символов имени сервера 255',
+			'min' => 'Очень маленькое имя сервера',
+			'unique' => 'Такое имя сервера уже используется',
+		]);
+		
+		//Пишем в БД
+		$server = new ServerList;
+			$server->name=$request->name;
+			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
+			$server->ipv6_enable=$this->_convert_checkbox($request->ipv6_enable);
+			$server->save();
+		return Redirect::to('/')->with('info_message', 'Сервер добавлен');
+*/	}
     public function ServerListEditView($id)	{
 		$server=ServerList::find($id);
 		return view('dashboard.ServerLists.form', [
+			'server' => $server,
+		]);
+	}
+    public function UpstreamListEditView($id)	{
+		$server=UpstreamList::find($id);
+		return view('dashboard.UpstreamLists.form', [
+			'server' => $server,
+		]);
+	}
+    public function LocationListEditView($id)	{
+		$server=LocationList::find($id);
+		return view('dashboard.LocationLists.form', [
 			'server' => $server,
 		]);
 	}
@@ -72,10 +129,55 @@ class Dashboard extends Controller
 			$server->save();
 		return Redirect::to('/')->with('info_message', 'Сервер изменен');
 	}
+	public function UpstreamListEdit(Request $request, $id) {
+		//Валидация введенных данных
+		$this->validate($request, [
+			'ip1' => array('required', 'regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+			'ip2' => array('regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+			'ip3' => array('regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+			'ip4' => array('regex:/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(:[0-9]{2,5})?$/'), 
+		],[
+			'regex' => 'Неправильный формат IP',
+			'required' => 'Ввод обязателен',
+			'max' => 'Максимальное количество символов алиаса сервера 255',
+			'min' => 'Очень маленький алиаса сервера',
+			'unique' => 'Такой алиас уже используется',
+		]);
+		
+		$server=UpstreamList::find($id);
+			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
+			$server->ip1=$request->ip1;
+			$server->is_backup_ip1=$this->_convert_checkbox($request->is_backup_ip1);
+			$server->ip2=$request->ip2;
+			$server->is_backup_ip2=$this->_convert_checkbox($request->is_backup_ip2);
+			$server->ip3=$request->ip3;
+			$server->is_backup_ip3=$this->_convert_checkbox($request->is_backup_ip3);
+			$server->ip4=$request->ip4;
+			$server->is_backup_ip4=$this->_convert_checkbox($request->is_backup_ip4);
+			$server->save();
+		return Redirect::to('/')->with('info_message', 'Сервер изменен');
+	}
+	public function LocationListEdit(Request $request, $id) {
+		/*$server=ServerList::find($id);
+			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
+			$server->ipv6_enable=$this->_convert_checkbox($request->ipv6_enable);
+			$server->save();
+		return Redirect::to('/')->with('info_message', 'Сервер изменен');*/
+	}
     public function ServerListRemove(Request $request, $id)	{
 		$server=ServerList::find($id);
 		$server->delete();
 		return Redirect::to('/')->with('info_message', 'Сервер удален');
+	}
+    public function UpstreamListRemove(Request $request, $id)	{
+		$server=UpstreamList::find($id);
+		$server->delete();
+		return Redirect::to('/')->with('info_message', 'Upstream удален');
+	}
+    public function LocationListRemove(Request $request, $id)	{
+		$server=LocationList::find($id);
+		$server->delete();
+		return Redirect::to('/')->with('info_message', 'Location удален');
 	}
     public function ServerListDisable(Request $request, $id)	{
 		$server=ServerList::find($id);
@@ -83,10 +185,34 @@ class Dashboard extends Controller
 		$server->save();
 		return Redirect::to('/')->with('info_message', 'Сервер отключен');
 	}
+    public function UpstreamListDisable(Request $request, $id)	{
+		$server=UpstreamList::find($id);
+		$server->is_enable="0";
+		$server->save();
+		return Redirect::to('/')->with('info_message', 'Upstream отключен');
+	}
+    public function LocationListDisable(Request $request, $id)	{
+		$server=LocationList::find($id);
+		$server->is_enable="0";
+		$server->save();
+		return Redirect::to('/')->with('info_message', 'Location отключен');
+	}
     public function ServerListEnable(Request $request, $id)	{
 		$server=ServerList::find($id);
 		$server->is_enable="1";
 		$server->save();
 		return Redirect::to('/')->with('info_message', 'Сервер включен');
+	}
+    public function UpstreamListEnable(Request $request, $id)	{
+		$server=UpstreamList::find($id);
+		$server->is_enable="1";
+		$server->save();
+		return Redirect::to('/')->with('info_message', 'Upstream включен');
+	}
+    public function LocationListEnable(Request $request, $id)	{
+		$server=LocationList::find($id);
+		$server->is_enable="1";
+		$server->save();
+		return Redirect::to('/')->with('info_message', 'Location включен');
 	}
 }

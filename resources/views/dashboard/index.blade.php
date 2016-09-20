@@ -54,24 +54,21 @@
 								</tr>
 							</thead>
 							<tbody>
+							@foreach($UpstreamLists as $upstream)
 								<tr class="odd gradeX">
-									<td><div class="col-md-6 vcenter"><h4>work</h4></div>
+									<td><div class="col-md-6 vcenter"><h4>{{$upstream->name}}</h4></div>
 									<div class="col-md-6 text-right vcenter tooltip-button">
-										<button type="button" class="btn btn-danger btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Выключить"><i class="glyphicon glyphicon-off"></i>
-										<button type="button" class="btn btn-warning btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать"><i class="glyphicon glyphicon-edit"></i>
-										<button type="button" class="btn btn-danger btn-circle" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить"><i class="glyphicon glyphicon-remove"></i>
+										@if ($upstream->is_enable)
+												<button onclick="location.href='/upstream_list/disable/{{$upstream->id}}'" type="button" class="btn btn-danger btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Выключить"><i class="glyphicon glyphicon-off"></i>
+										@else
+												<button onclick="location.href='/upstream_list/enable/{{$upstream->id}}'" type="button" class="btn btn-success btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Включить"><i class="glyphicon glyphicon-off"></i>
+										@endif
+											<button onclick="location.href='/upstream_list/edit/{{$upstream->id}}'" type="button" class="btn btn-warning btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать"><i class="glyphicon glyphicon-edit"></i>
+											<button onclick="location.href='/upstream_list/remove/{{$upstream->id}}'" type="button" class="btn btn-danger btn-circle" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить"><i class="glyphicon glyphicon-remove"></i>
 									</div>
 									</td>
 								</tr>
-								<tr class="odd gradeX">
-									<td><div class="col-md-6 vcenter"><h4>srv-dev</h4></div>
-									<div class="col-md-6 text-right vcenter tooltip-button">
-										<button type="button" class="btn btn-success btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Включить"><i class="glyphicon glyphicon-off"></i>
-										<button type="button" class="btn btn-warning btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать"><i class="glyphicon glyphicon-edit"></i>
-										<button type="button" class="btn btn-danger btn-circle" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить"><i class="glyphicon glyphicon-remove"></i>
-									</div>
-									</td>
-								</tr>
+							@endforeach
 							</tbody>
 						</table>
 						<a class="btn btn-success btn-outline btn-block" href="/upstream_list/add">Добавить сервер</a>

@@ -44,5 +44,33 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('remove/{id}', 'Dashboard@ServerListRemove')
 			->where('id', '[0-9]+');
 	});
+	Route::group(['prefix' => 'upstream_list'], function (){
+		Route::get('add', 'Dashboard@UpstreamListAddView');
+		Route::post('add', 'Dashboard@UpstreamListAdd');
+		Route::get('edit/{id}', 'Dashboard@UpstreamListEditView')
+			->where('id', '[0-9]+');
+		Route::post('edit/{id}', 'Dashboard@UpstreamListEdit')
+			->where('id', '[0-9]+');
+		Route::get('enable/{id}', 'Dashboard@UpstreamListEnable')
+			->where('id', '[0-9]+');
+		Route::get('disable/{id}', 'Dashboard@UpstreamListDisable')
+			->where('id', '[0-9]+');
+		Route::get('remove/{id}', 'Dashboard@UpstreamListRemove')
+			->where('id', '[0-9]+');
+	});
+	Route::group(['prefix' => 'location_list'], function (){
+		Route::get('add', 'Dashboard@LocationListAddView');
+		Route::post('add', 'Dashboard@LocationListAdd');
+		Route::get('edit/{id}', 'Dashboard@LocationListEditView')
+			->where('id', '[0-9]+');
+		Route::post('edit/{id}', 'Dashboard@LocationListEdit')
+			->where('id', '[0-9]+');
+		Route::get('enable/{id}', 'Dashboard@LocationListEnable')
+			->where('id', '[0-9]+');
+		Route::get('disable/{id}', 'Dashboard@LocationListDisable')
+			->where('id', '[0-9]+');
+		Route::get('remove/{id}', 'Dashboard@LocationListRemove')
+			->where('id', '[0-9]+');
+	});
 //	Route::get('/server-list', 'Dashboard@server_list');
 });
