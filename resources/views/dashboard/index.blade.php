@@ -12,6 +12,12 @@
 				{!!Session::get('info_message')!!}
 				</div>
 			@endif
+			@if(Session::has('warning_message'))
+				<div class="alert alert-warning alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{!!Session::get('warning_message')!!}
+				</div>
+			@endif
 				<div class="row">
 					<div class="col-md-6">
 						<h3 class="page-header">Список доменных имен</br>
@@ -71,7 +77,7 @@
 							@endforeach
 							</tbody>
 						</table>
-						<a class="btn btn-success btn-outline btn-block" href="/upstream_list/add">Добавить сервер</a>
+						<a class="btn btn-success btn-outline btn-block" href="/upstream_list/add">Добавить upstream</a>
 					</div>
 				</div>			
                 <div class="row">
@@ -89,31 +95,46 @@
                                 <thead>
                                     <tr>
                                         <th>Location</th>
-                                        <th>Сервер</th>
-                                        <th>Активно</th>
+                                        <th>Upstream</th>
+                                        <th>URL</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
+								@foreach($LocationLists as $location)
                                     <tr class="odd gradeX">
-                                        <td>work</td>
-                                        <td>1cwork</td>
-                                        <td>yes</td>
-                                    <tr class="odd gradeX">
-                                        <td>work</td>
-                                        <td>1cwork</td>
-                                        <td>yes</td>
-                                    <tr class="odd gradeX">
-                                        <td>work</td>
-                                        <td>1cwork</td>
-                                        <td>yes</td>
-                                    <tr class="odd gradeX">
-                                        <td>work</td>
-                                        <td>1cwork</td>
-                                        <td>yes</td>
+                                        <td>{{$location->location}}</td>
+                                        <td>
+											@foreach($UpstreamLists as $upstream)
+												@if ($upstream->id == $location->upstream_lists_id)
+													{{$upstream->name}}
+												@endif
+											@endforeach
+										</td>
+                                        <td>
+											@foreach($ServerLists as $server)
+												@if ($server->id == $location->server_lists_id)
+													 <?php $url_server = $server->name; ?>
+												@endif
+											@endforeach
+											<a target="_blank" href="http://<?php echo $url_server; ?>{{$location->location}}" >http://<?php echo $url_server; ?>{{$location->location}}</a>
+										</td>
+                                        <td>
+											<div class="text-right vcenter tooltip-button">
+										@if ($location->is_enable)
+												<button onclick="location.href='/location_list/disable/{{$location->id}}'" type="button" class="btn btn-danger btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Выключить"><i class="glyphicon glyphicon-off"></i>
+										@else
+												<button onclick="location.href='/location_list/enable/{{$location->id}}'" type="button" class="btn btn-success btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Включить"><i class="glyphicon glyphicon-off"></i>
+										@endif
+											<button onclick="location.href='/location_list/edit/{{$location->id}}'" type="button" class="btn btn-warning btn-circle btn-outline" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать"><i class="glyphicon glyphicon-edit"></i>
+											<button onclick="location.href='/location_list/remove/{{$location->id}}'" type="button" class="btn btn-danger btn-circle" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить"><i class="glyphicon glyphicon-remove"></i>
+											</div>
+										</td>
                                     </tr>
+								@endforeach
                                 </tbody>
                             </table>
-							<a class="btn btn-success btn-outline btn-block" href="/location_list/add">Добавить сервер</a>
+							<a class="btn btn-success btn-outline btn-block" href="/location_list/add">Добавить location</a>
                 <!-- /.col-lg-12 -->
             </div>
             </div>

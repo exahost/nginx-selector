@@ -9,6 +9,7 @@ use App\Models\LocationList;
 use App\Http\Requests;
 use Validator;
 use Redirect;
+use DB;
 
 class Dashboard extends Controller
 {
@@ -23,8 +24,9 @@ class Dashboard extends Controller
     public function index()	{
 		$ServerLists=ServerList::all();
 		$UpstreamLists=UpstreamList::all();
+		$LocationLists=LocationList::all();
 		//var_dump($ServerList);
-		return view('dashboard.index', ['ServerLists'=>$ServerLists, 'UpstreamLists'=>$UpstreamLists]);
+		return view('dashboard.index', ['ServerLists'=>$ServerLists, 'UpstreamLists'=>$UpstreamLists, 'LocationLists'=>$LocationLists]);
 	}
     public function ServerListAddView()	{
 		return view('dashboard.ServerLists.form');
@@ -33,7 +35,9 @@ class Dashboard extends Controller
 		return view('dashboard.UpstreamLists.form');
 	}
     public function LocationListAddView()	{
-		return view('dashboard.LocationLists.form');
+		$ServerLists=ServerList::all();
+		$UpstreamLists=UpstreamList::all();
+		return view('dashboard.LocationLists.form', ['ServerLists'=>$ServerLists, 'UpstreamLists'=>$UpstreamLists]);
 	}
     public function ServerListAdd(Request $request)	{
 		//Валидация введенных данных
@@ -86,24 +90,26 @@ class Dashboard extends Controller
 		return Redirect::to('/')->with('info_message', 'Upstream добавлен');
 	}
     public function LocationListAdd(Request $request)	{
-/*		//Валидация введенных данных
+		//Валидация введенных данных
 		$this->validate($request, [
-			'name' => 'required|max:255|min:3|unique:server_lists', 
+			'location' => array('required', 'max:255', 'regex:/^\//'), 
+			'upstream' => 'required', 
+			'serverlist' => 'required', 
 		],[
-			'required' => 'Ввод имени сервера обязателен',
-			'max' => 'Максимальное количество символов имени сервера 255',
-			'min' => 'Очень маленькое имя сервера',
-			'unique' => 'Такое имя сервера уже используется',
+			'regex' => 'Неправильный формат ввода, начните с /',
+			'required' => 'Ввод обязателен',
+			'max' => 'Максимальное количество символов - 255',
 		]);
 		
 		//Пишем в БД
-		$server = new ServerList;
-			$server->name=$request->name;
+		$server = new LocationList;
+			$server->location=$request->location;
 			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
-			$server->ipv6_enable=$this->_convert_checkbox($request->ipv6_enable);
+			$server->server_lists_id=$request->serverlist;
+			$server->upstream_lists_id=$request->upstream;
 			$server->save();
-		return Redirect::to('/')->with('info_message', 'Сервер добавлен');
-*/	}
+		return Redirect::to('/')->with('info_message', 'Location добавлен');
+	}
     public function ServerListEditView($id)	{
 		$server=ServerList::find($id);
 		return view('dashboard.ServerLists.form', [
@@ -117,9 +123,13 @@ class Dashboard extends Controller
 		]);
 	}
     public function LocationListEditView($id)	{
-		$server=LocationList::find($id);
+		$LocationLists=LocationList::find($id);
+		$UpstreamLists=UpstreamList::all();
+		$ServerLists=ServerList::all();
 		return view('dashboard.LocationLists.form', [
-			'server' => $server,
+			'ServerLists' => $ServerLists,
+			'UpstreamLists' => $UpstreamLists,
+			'location' => $LocationLists,
 		]);
 	}
 	public function ServerListEdit(Request $request, $id) {
@@ -158,18 +168,38 @@ class Dashboard extends Controller
 		return Redirect::to('/')->with('info_message', 'Сервер изменен');
 	}
 	public function LocationListEdit(Request $request, $id) {
-		/*$server=ServerList::find($id);
+		//Валидация введенных данных
+		$this->validate($request, [
+			'location' => array('required', 'max:255', 'regex:/^\//'), 
+			'upstream' => 'required', 
+			'serverlist' => 'required', 
+		],[
+			'regex' => 'Неправильный формат ввода, начните с /',
+			'required' => 'Ввод обязателен',
+			'max' => 'Максимальное количество символов - 255',
+		]);
+		
+		//Пишем в БД
+		$server = LocationList::find($id);
+			$server->location=$request->location;
 			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
-			$server->ipv6_enable=$this->_convert_checkbox($request->ipv6_enable);
+			$server->server_lists_id=$request->serverlist;
+			$server->upstream_lists_id=$request->upstream;
 			$server->save();
-		return Redirect::to('/')->with('info_message', 'Сервер изменен');*/
+		return Redirect::to('/')->with('info_message', 'Location изменен');
 	}
     public function ServerListRemove(Request $request, $id)	{
+		if (LocationList::where('server_lists_id','=',$id)->first()) {
+			return Redirect::to('/')->with('warning_message', 'Невозможно удалить сервер, к нему привязан location');
+		}
 		$server=ServerList::find($id);
 		$server->delete();
 		return Redirect::to('/')->with('info_message', 'Сервер удален');
 	}
     public function UpstreamListRemove(Request $request, $id)	{
+		if (LocationList::where('upstream_lists_id','=',$id)->first()) {
+			return Redirect::to('/')->with('warning_message', 'Невозможно удалить upstream, к нему привязан location');
+		}
 		$server=UpstreamList::find($id);
 		$server->delete();
 		return Redirect::to('/')->with('info_message', 'Upstream удален');

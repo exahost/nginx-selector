@@ -8,7 +8,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h4 class="page-header">@if (isset($server->name)) Изменить @else Добавить @endif сервер</h4>
+                        <h4 class="page-header">@if (isset($location->location)) Изменить @else Добавить @endif location</h4>
 						@if (count($errors) > 0)
 							@foreach ($errors->all() as $error)
 							<div class="alert alert-danger alert-dismissable">
@@ -20,21 +20,21 @@
 						<form method="POST">
 						{{ csrf_field() }}
 						<div class="col-lg-6">
-							<div class="form-group @if ($errors->has('name')) has-error @endif">
-								<p>* Введите имя сервера без http/https:</p>
-								<input @if (isset($server->name)) disabled="" @endif class="form-control" placeholder="example.com" name="name" @if(old('name')) value="{{ old('name') }}" @elseif (isset($server->name))  value="{{ $server->name }}" @else @endif>
+							<div class="form-group @if ($errors->has('location')) has-error @endif">
+								<p>* Введите location (обязательно начать с /):</p>
+								<input class="form-control" placeholder="/location" name="location" @if(old('location')) value="{{ old('location') }}" @elseif (isset($location->location))  value="{{ $location->location }}" @else @endif>
 							</div>
 							<div class="form-group">
 								<label class="checkbox-inline">
 									<input type="checkbox" name="is_enabled" 
 									@if(old('is_enabled'))
 										checked="checked"
-									@elseif(old('name'))
+									@elseif(old('_token'))
 									@else
-										@if (isset($server->name))
-											@if($server->is_enable)
+										@if (isset($location->location))
+											@if($location->is_enable)
 												checked="checked"
-											@elseif (!$server->is_enable)
+											@elseif (!$location->is_enable)
 											@else
 											@endif
 										@else
@@ -43,30 +43,49 @@
 									@endif
 									>Включить
 								</label>
-								<label class="checkbox-inline">
-									<input type="checkbox" name="ipv6_enable"
-									@if(old('ipv6_enable'))
-										checked="checked"
-									@elseif(old('name'))
+							</div>
+							<div class="form-group @if ($errors->has('upstream')) has-error @endif">
+							<p>* Выберите upstream:</p>
+								<select class="form-control" name="upstream">
+								@foreach ($UpstreamLists as $upstream)
+									<option
+									@if($upstream->id == old('upstream'))
+										selected
 									@else
-										@if (isset($server->name))
-											@if($server->ipv6_enable)
-												checked="checked"
-											@elseif (!$server->ipv6_enable)
-											@else
+										@if (isset($location->location))
+											@if($location->upstream_lists_id == $upstream->id)
+												selected
 											@endif
-										@else
-											checked="checked"
 										@endif
 									@endif
-									>IPv6
-								</label>
+										value="{{$upstream->id}}">{{$upstream->name}}</option>
+								@endforeach
+								</select>
 							</div>
-							<button type="submit" class="btn btn-outline btn-success btn-block">@if (isset($server->name)) Изменить @else Добавить @endif</button>
+							<div class="form-group @if ($errors->has('serverlist')) has-error @endif">
+							<p>* Выберите доменное имя:</p>
+								<select class="form-control" name="serverlist">
+								@foreach ($ServerLists as $server)
+									<option 
+									@if($server->id == old('serverlist'))
+										selected
+									@else
+										@if (isset($location->location))
+											@if($location->server_lists_id == $server->id)
+												selected
+											@endif
+										@endif
+									@endif
+										value="{{$server->id}}">{{$server->name}}</option>
+								@endforeach
+								</select>
+							</div>
+							<button type="submit" class="btn btn-outline btn-success btn-block">@if (isset($location->location)) Изменить @else Добавить @endif</button>
 						</div>
 						</form>
                     </div>
                     <!-- /.col-lg-12 -->
+					<div class="col-lg-12">&nbsp;</div>
                 </div>
                 <!-- /.row -->
             </div>

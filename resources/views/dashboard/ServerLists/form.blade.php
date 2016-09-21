@@ -29,7 +29,7 @@
 									<input type="checkbox" name="is_enabled" 
 									@if(old('is_enabled'))
 										checked="checked"
-									@elseif(old('name'))
+									@elseif(old('_token'))
 									@else
 										@if (isset($server->name))
 											@if($server->is_enable)
@@ -47,7 +47,7 @@
 									<input type="checkbox" name="ipv6_enable"
 									@if(old('ipv6_enable'))
 										checked="checked"
-									@elseif(old('name'))
+									@elseif(old('_token'))
 									@else
 										@if (isset($server->name))
 											@if($server->ipv6_enable)
