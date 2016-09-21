@@ -12,10 +12,22 @@
 				{!!Session::get('info_message')!!}
 				</div>
 			@endif
+			@if(Session::has('success_message'))
+				<div class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{!!Session::get('success_message')!!}
+				</div>
+			@endif
 			@if(Session::has('warning_message'))
 				<div class="alert alert-warning alert-dismissable">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 				{!!Session::get('warning_message')!!}
+				</div>
+			@endif
+			@if(Session::has('error_message'))
+				<div class="alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{!!Session::get('error_message')!!}
 				</div>
 			@endif
 				<div class="row">
@@ -143,7 +155,7 @@
 					<h3 class="page-header">Применение значений</br>
 						<small>Для генерации конфигурационного файла и применения нажмите кнопку</small>
 					</h3>
-					<a class="btn btn-warning btn-outline btn-block" href="/">Применить</a>
+					<a class="btn btn-warning btn-outline btn-block" href="/generate">Применить</a>
 					<div class="col-lg-12">&nbsp;</div>
 				</div>
 			</div>

@@ -48,27 +48,8 @@
 								<p>* Введите IP первого сервера назначения (например, 1.2.3.4:8080)</p>
 								<input @if (isset($server->ip1)) @endif class="form-control" placeholder="1.2.3.4:8080" name="ip1" @if(old('ip1')) value="{{ old('ip1') }}" @elseif (isset($server->ip1))  value="{{ $server->ip1 }}" @else @endif>
 							</div>
-							<div class="form-group">
-								<label class="checkbox-inline">
-									<input type="checkbox" name="is_backup_ip1" 
-									@if(old('is_backup_ip1'))
-										checked="checked"
-									@elseif(old('ip1'))
-									@else
-										@if (isset($server->ip1))
-											@if($server->is_backup_ip1)
-												checked="checked"
-											@elseif (!$server->is_backup_ip1)
-											@else
-											@endif
-										@else
-										@endif
-									@endif
-									>backup
-								</label>
-							</div>
 							<div class="form-group @if ($errors->has('ip2')) has-error @endif">
-								<p>* Введите IP второго сервера назначения (например, 1.2.3.4:8080)</p>
+								<p>Введите IP второго сервера назначения (например, 1.2.3.4:8080)</p>
 								<input @if (isset($server->ip2)) @endif class="form-control" placeholder="1.2.3.4:8080" name="ip2" @if(old('ip2')) value="{{ old('ip2') }}" @elseif (isset($server->ip2))  value="{{ $server->ip2 }}" @else @endif>
 							</div>
 							<div class="form-group">
@@ -91,7 +72,7 @@
 								</label>
 							</div>
 							<div class="form-group @if ($errors->has('ip3')) has-error @endif">
-								<p>* Введите IP третьего сервера назначения (например, 1.2.3.4:8080)</p>
+								<p>Введите IP третьего сервера назначения (например, 1.2.3.4:8080)</p>
 								<input @if (isset($server->ip3)) @endif class="form-control" placeholder="1.2.3.4:8080" name="ip3" @if(old('ip3')) value="{{ old('ip3') }}" @elseif (isset($server->ip3))  value="{{ $server->ip3 }}" @else @endif>
 							</div>
 							<div class="form-group">
@@ -114,7 +95,7 @@
 								</label>
 							</div>
 							<div class="form-group @if ($errors->has('ip4')) has-error @endif">
-								<p>* Введите IP четвертого сервера назначения (например, 1.2.3.4:8080)</p>
+								<p>Введите IP четвертого сервера назначения (например, 1.2.3.4:8080)</p>
 								<input @if (isset($server->ip4)) @endif class="form-control" placeholder="1.2.3.4:8080" name="ip4" @if(old('ip4')) value="{{ old('ip4') }}" @elseif (isset($server->ip4))  value="{{ $server->ip4 }}" @else @endif>
 							</div>
 							<div class="form-group">

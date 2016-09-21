@@ -19,7 +19,6 @@ class UpstreamList extends Migration
 			$table->string('name')->unique();
 			$table->boolean('is_enable');
 			$table->string('ip1');
-			$table->boolean('is_backup_ip1');
 			$table->string('ip2')->nullable();
 			$table->boolean('is_backup_ip2')->nullable();
 			$table->string('ip3')->nullable();

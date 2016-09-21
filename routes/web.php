@@ -72,5 +72,6 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('remove/{id}', 'Dashboard@LocationListRemove')
 			->where('id', '[0-9]+');
 	});
+	Route::get('generate', 'Dashboard@GenerateAndApply');
 //	Route::get('/server-list', 'Dashboard@server_list');
 });

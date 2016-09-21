@@ -79,7 +79,6 @@ class Dashboard extends Controller
 			$server->name=$request->name;
 			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
 			$server->ip1=$request->ip1;
-			$server->is_backup_ip1=$this->_convert_checkbox($request->is_backup_ip1);
 			$server->ip2=$request->ip2;
 			$server->is_backup_ip2=$this->_convert_checkbox($request->is_backup_ip2);
 			$server->ip3=$request->ip3;
@@ -157,7 +156,6 @@ class Dashboard extends Controller
 		$server=UpstreamList::find($id);
 			$server->is_enable=$this->_convert_checkbox($request->is_enabled);
 			$server->ip1=$request->ip1;
-			$server->is_backup_ip1=$this->_convert_checkbox($request->is_backup_ip1);
 			$server->ip2=$request->ip2;
 			$server->is_backup_ip2=$this->_convert_checkbox($request->is_backup_ip2);
 			$server->ip3=$request->ip3;
@@ -244,5 +242,23 @@ class Dashboard extends Controller
 		$server->is_enable="1";
 		$server->save();
 		return Redirect::to('/')->with('info_message', 'Location включен');
+	}
+	public function GenerateAndApply() {
+		$ServerLists=ServerList::all();
+		$UpstreamLists=UpstreamList::all();
+		$LocationLists=LocationList::all();
+
+		if($ServerLists->count() == 0 || $ServerLists->where('is_enable','=',1)->count() == 0) {
+			return Redirect::to('/')->with('error_message', 'Ошибка, отсутсвуют включенные сервера');
+		}
+		if($UpstreamLists->count() == 0 || $UpstreamLists->where('is_enable','=',1)->count() == 0) {
+			return Redirect::to('/')->with('error_message', 'Ошибка, отсутсвуют включенные upstream');
+		}
+		if($LocationLists->count() == 0 || $LocationLists->where('is_enable','=',1)->count() == 0) {
+			return Redirect::to('/')->with('error_message', 'Ошибка, отсутсвуют включенные location');
+		}
+		
+
+		return Redirect::to('/')->with('success_message', 'Конфигурационный файл сгенерирован, nginx перезапущен');
 	}
 }
