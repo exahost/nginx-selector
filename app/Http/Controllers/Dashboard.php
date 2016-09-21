@@ -92,7 +92,7 @@ class Dashboard extends Controller
     public function LocationListAdd(Request $request)	{
 		//Валидация введенных данных
 		$this->validate($request, [
-			'location' => array('required', 'max:255', 'regex:/^\//'), 
+			'location' => array('required', 'unique:location_lists,location,NULL,id,server_lists_id,'.$request->serverlist.'', 'max:255', 'regex:/^\//'), 
 			'upstream' => 'required', 
 			'serverlist' => 'required', 
 		],[
@@ -170,7 +170,7 @@ class Dashboard extends Controller
 	public function LocationListEdit(Request $request, $id) {
 		//Валидация введенных данных
 		$this->validate($request, [
-			'location' => array('required', 'max:255', 'regex:/^\//'), 
+			'location' => array('required', 'unique:location_lists,location,'.$id.',id,server_lists_id,'.$request->serverlist.'', 'max:255', 'regex:/^\//'), 
 			'upstream' => 'required', 
 			'serverlist' => 'required', 
 		],[

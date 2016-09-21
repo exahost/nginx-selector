@@ -51,12 +51,13 @@
 									<option
 									@if($upstream->id == old('upstream'))
 										selected
-									@else
+									@elseif(!old('upstream'))
 										@if (isset($location->location))
 											@if($location->upstream_lists_id == $upstream->id)
 												selected
 											@endif
 										@endif
+									@else
 									@endif
 										value="{{$upstream->id}}">{{$upstream->name}}</option>
 								@endforeach
@@ -69,12 +70,13 @@
 									<option 
 									@if($server->id == old('serverlist'))
 										selected
-									@else
+									@elseif(!old('serverlist'))
 										@if (isset($location->location))
 											@if($location->server_lists_id == $server->id)
 												selected
 											@endif
 										@endif
+									@else
 									@endif
 										value="{{$server->id}}">{{$server->name}}</option>
 								@endforeach
