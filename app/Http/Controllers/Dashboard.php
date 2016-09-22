@@ -10,6 +10,7 @@ use App\Http\Requests;
 use Validator;
 use Redirect;
 use DB;
+use Storage;
 
 class Dashboard extends Controller
 {
@@ -258,7 +259,115 @@ class Dashboard extends Controller
 			return Redirect::to('/')->with('error_message', 'Ошибка, отсутсвуют включенные location');
 		}
 		
+		$disk = Storage::disk('nginx');
+		$upstream_conf_file = '000-upstream.conf';
+		$server_conf_file = '001-servers.conf';
+		
+		Storage::disk('nginx')->makeDirectory('backup');
+		if (Storage::disk('nginx')->exists($upstream_conf_file)) {
+			Storage::disk('nginx')->move($upstream_conf_file, 'backup/'.date('d.m.Y-H.i.s').'_'.$upstream_conf_file);
+		}
+		
+		Storage::disk('nginx')->put($upstream_conf_file, '');
+		foreach ($UpstreamLists as $upstream) {
+			if (!empty($upstream->ip2)) {
+				if ($upstream->is_backup_ip2) {
+					$ip2 = '
+	server '.$upstream->ip2.' backup;';
+				}
+				else {
+					$ip2 = '
+	server '.$upstream->ip2.';';
+				}
+			}
+			else {
+				$ip2 = '';
+			}
+			if (!empty($upstream->ip3)) {
+				if ($upstream->is_backup_ip3) {
+					$ip3 = '
+	server '.$upstream->ip3.' backup;';
+				}
+				else {
+					$ip3 = '
+	server '.$upstream->ip3.';';
+				}
+			}
+			else {
+				$ip3 = '';
+			}
+			if (!empty($upstream->ip4)) {
+				if ($upstream->is_backup_ip4) {
+					$ip4 = '
+	server '.$upstream->ip4.' backup;';
+				}
+				else {
+					$ip4 = '
+	server '.$upstream->ip4.';';
+				}
+			}
+			else {
+				$ip4 = '';
+			}
+$content_upstream = "upstream $upstream->name {
+	server $upstream->ip1 fail_timeout=5s; $ip2 $ip3 $ip4
+}
+";
+			Storage::disk('nginx')->append($upstream_conf_file, $content_upstream);
+		}
 
+		if (Storage::disk('nginx')->exists($server_conf_file)) {
+			Storage::disk('nginx')->move($server_conf_file, 'backup/'.date('d.m.Y-H.i.s').'_'.$server_conf_file);
+		}
+		
+		Storage::disk('nginx')->put($server_conf_file, '');
+		
+		foreach ($ServerLists as $server_list) {
+			$LocationsForThisServer=LocationList::where('server_lists_id','=',$server_list->id);
+			if ($server_list->is_enable and $LocationsForThisServer->count() > 0) {
+				if ($server_list->ipv6_enable) {
+					$ipv6 = '
+	listen       [::]:80;';
+				}
+				else {
+					$ipv6 = '';
+				}
+
+				$location = '';
+				$location_proxy = '';
+				foreach ($LocationsForThisServer->get() as $LocationForThisServer) {
+					$upstream_for_this = UpstreamList::where('id','=',$LocationForThisServer->upstream_lists_id)->first();
+					$location .= "	location $LocationForThisServer->location {
+        try_files \$uri @$upstream_for_this->name;
+    }
+";
+				}
+				
+				foreach ($LocationsForThisServer->select('upstream_lists_id')->distinct()->get() as $LocationForThisServer) {
+					$upstream_uniq_for_this = UpstreamList::where('id','=',$LocationForThisServer->upstream_lists_id)->first();
+					$location_proxy .= "location @$upstream_uniq_for_this->name {
+		proxy_pass http://$upstream_uniq_for_this->name;
+		proxy_set_header Host \$host;
+		proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto \$scheme;
+		proxy_set_header X-Real-IP \$remote_addr;
+	}";
+				}
+				
+				$content_server = "server {
+    listen       80; $ipv6
+    server_name  $server_list->name www.$server_list->name;
+
+$location
+
+	$location_proxy
+}";
+				Storage::disk('nginx')->append($server_conf_file, $content_server);
+			}
+		}
+
+		// Тут релоадим конфиг
+		
 		return Redirect::to('/')->with('success_message', 'Конфигурационный файл сгенерирован, nginx перезапущен');
 	}
 }

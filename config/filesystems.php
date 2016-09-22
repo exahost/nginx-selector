@@ -53,6 +53,11 @@ return [
             'root' => storage_path('app/public'),
             'visibility' => 'public',
         ],
+		
+        'nginx' => [
+            'driver' => 'local',
+            'root' => storage_path('app/nginx-extra-conf'),
+        ],
 
         's3' => [
             'driver' => 's3',
